@@ -1,0 +1,19 @@
+---
+- hosts: all
+  sudo: yes
+  tasks:
+  - name: Update APT
+    apt: update_cache=yes
+  - name: Upgrade Distro
+    apt: upgrade=dist
+  - name: Auto Remove
+    shell: apt-get -y autoremove
+  - name: Test For Reboot
+    shell: "[ -f /var/run/reboot-required ]"
+    failed_when: False
+    register: reboot_required
+    changed_when: reboot_required.rc == 0
+  
+  handlers:
+  - name: Reboot
+    command: /sbin/reboot
